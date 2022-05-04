@@ -63,6 +63,10 @@ public class Item {
     public int getQuantity() {
         return quantity;
     }
+    public void setQuantity(int quantity) {
+        if(quantity > 0)
+            this.quantity = quantity;
+    }
     public String toString(){
         return name + " " + price + " " + quantity + " " + getVATrate();
     }

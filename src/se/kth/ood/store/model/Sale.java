@@ -72,6 +72,16 @@ public class Sale {
         setTimeOfSale();
         return getRunningTotal();
     }
+    public void increaseItemQuantity(String name, int addedQuantity){
+        for(int i = 0; i < itemsInSale.size(); i++)
+        {
+            if(itemsInSale.get(i).getName().equals(name))
+            {
+                itemsInSale.get(i).setQuantity(itemsInSale.get(i).getQuantity() + addedQuantity);
+                break;
+            }
+        }
+    }
     public String getSaleTime(){
 
         return saleTime.toString();

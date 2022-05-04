@@ -29,7 +29,20 @@ public class Controller {
      */
     public ItemDTO scanItem(int itemID, int quantity){ //find item in itemdatabase
         Item scannedItem = externalInventorySystem.getItemByID(itemID, quantity);
-        sale.addItemToSale(scannedItem);
+        ItemDTO[] dtos = sale.getItemDTOSInSale();
+
+        boolean alreadyExists = false;
+
+        for (int i = 0; i < dtos.length; i++){
+            if(dtos[i].getName().equals(scannedItem.getName()))
+            {
+                alreadyExists = true;
+                sale.increaseItemQuantity(dtos[i].getName(), quantity);
+            }
+        }
+        if(!alreadyExists) {
+            sale.addItemToSale(scannedItem);
+        }
 
         ItemDTO scannedItemDTO = new ItemDTO(scannedItem);
         return scannedItemDTO;

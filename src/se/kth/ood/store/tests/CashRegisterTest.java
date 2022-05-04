@@ -29,6 +29,6 @@ class CashRegisterTest {
         register.addToBalance(amountToAdd);
         float realBalance = register.getBalance();
 
-        assertEquals(realBalance, expectedBalance);
+        assertEquals(realBalance, expectedBalance, "The expected balance is DIFFERENT from the actual balance.");
     }
 }

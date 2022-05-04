@@ -23,6 +23,6 @@ class ItemTest {
     }
     @Test
     void testEquals(){
-        assertEquals(firstItem.toString(), secondItem.toString());
+        assertEquals(firstItem.toString(), secondItem.toString(), "Items were NOT equal.");
     }
 }

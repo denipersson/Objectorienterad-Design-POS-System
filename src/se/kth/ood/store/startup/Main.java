@@ -1,6 +1,7 @@
 package se.kth.ood.store.startup;
 
 import se.kth.ood.store.controller.Controller;
+import se.kth.ood.store.view.TotalRevenueView;
 import se.kth.ood.store.view.View;
 
 /**
@@ -16,6 +17,7 @@ public class Main {
 
         Controller controller = new Controller();
         View view = new View(controller);
+        view.hardcodeView();
 
     }
 

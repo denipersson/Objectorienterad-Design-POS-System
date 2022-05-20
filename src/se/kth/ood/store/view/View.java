@@ -20,14 +20,20 @@ public class View {
      */
     public View (Controller controller){
         this.controller = controller;
-        hardcodeView();
+        controller.addTotalRevenueObserver(new TotalRevenueView());
+        controller.addTotalRevenueObserver(new TotalRevenueFileOutput());
     }
-
     /**
      * A hardcoded method with all the inputs from an imaginary view
      */
-    private void hardcodeView(){
+    public void hardcodeView(){
+        firstHardcodedSale();
+        secondHardcodedSale();
+    }
+
+    private void firstHardcodedSale(){
         controller.startSale();
+
         printToConsole("Sale started.");
 
         ItemDTO firstItemDTO = controller.scanItem(firstItemID, firstItemQuantity);
@@ -36,6 +42,28 @@ public class View {
         ItemDTO secondItemDTO = controller.scanItem(secondItemID, secondItemQuantity);
         sendItemInfoToDisplay(secondItemDTO);
 
+        ItemDTO wrongQuantityItemDTO = controller.scanItem(firstItemID, -1000);
+        sendItemInfoToDisplay(wrongQuantityItemDTO);
+
+        int errorItemIDTest = 8888;
+        ItemDTO nonExistantItemDTO = controller.scanItem(errorItemIDTest, 1);
+        sendItemInfoToDisplay(nonExistantItemDTO);
+
+        int serverErrorID = 404;
+
+        ItemDTO serverErrorItem = controller.scanItem(serverErrorID, 1);
+        sendItemInfoToDisplay(serverErrorItem);
+
+        float totalPrice = controller.endSale();
+        controller.enterAmountPaid(totalPrice);
+        controller.finish();
+    }
+
+    private void secondHardcodedSale(){
+        controller.startSale();
+
+        ItemDTO firstItemDTO = controller.scanItem(firstItemID, firstItemQuantity);
+        sendItemInfoToDisplay(firstItemDTO);
         float totalPrice = controller.endSale();
         controller.enterAmountPaid(totalPrice);
         controller.finish();
@@ -46,12 +74,15 @@ public class View {
      * @param itemDTO to print
      */
     private void sendItemInfoToDisplay(ItemDTO itemDTO){
-        printToConsole(itemDTO.getName() + " x " + itemDTO.getQuantity() +
-                " \n" + " price per unit: " +
-                (itemDTO.getPrice()+itemDTO.getPrice()*itemDTO.getVATrate())
-                + " (" + itemDTO.getPrice() +
-                " + " + itemDTO.getPrice()*itemDTO.getVATrate() + " VAT)" +
-                ", Running total: " + controller.getRunningTotal());
+        if(!(itemDTO == null)) {
+
+            printToConsole("[VIEW]\n"+ itemDTO.getName() + " x " + itemDTO.getQuantity() +
+                    " \n" + "price per unit: " +
+                    (itemDTO.getPrice() + itemDTO.getPrice() * itemDTO.getVATrate())
+                    + " (" + itemDTO.getPrice() +
+                    " + " + itemDTO.getPrice() * itemDTO.getVATrate() + " VAT)" +
+                    ", Running total: " + controller.getRunningTotal());
+        }
     }
 
     /**

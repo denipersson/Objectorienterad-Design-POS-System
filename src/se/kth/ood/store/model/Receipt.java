@@ -16,7 +16,7 @@ public class Receipt {
      * @param sale object with data to put on receipt
      */
     public Receipt(Sale sale){
-        textOnReceipt = "\n_____________________\nSale Receipt " + sale.getSaleTime() + "\n";
+        textOnReceipt = "[RECEIPT]"+"\n_____________________\nSale Receipt " + sale.getSaleTime() + "\n";
         ItemDTO itemDTOSInSale[] = sale.getItemDTOSInSale();
 
         for (int i = 0; i < itemDTOSInSale.length; i++){

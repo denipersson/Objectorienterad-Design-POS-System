@@ -1,0 +1,7 @@
+se.kth.ood.store
+se.kth.ood.store.controller
+se.kth.ood.store.exceptions
+se.kth.ood.store.integration
+se.kth.ood.store.model
+se.kth.ood.store.startup
+se.kth.ood.store.view

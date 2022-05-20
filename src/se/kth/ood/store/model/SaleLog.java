@@ -16,7 +16,6 @@ public class SaleLog {
     public void logSale(Sale sale){
         if(sale != null) {
             loggedSales.add(sale);
-            System.out.println("SALE LOGGED.");
         }
     }
 }

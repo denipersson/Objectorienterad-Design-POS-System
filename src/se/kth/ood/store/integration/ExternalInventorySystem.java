@@ -1,5 +1,8 @@
 package se.kth.ood.store.integration;
 
+import se.kth.ood.store.exceptions.InvalidAmountException;
+import se.kth.ood.store.exceptions.ItemMissingException;
+import se.kth.ood.store.exceptions.ServerErrorException;
 import se.kth.ood.store.model.Item;
 
 import java.util.HashMap;
@@ -23,6 +26,9 @@ public class ExternalInventorySystem {
     private final float applePrice = 10;
     private final float magazinePrice = 39.90f;
 
+    private final int serverDownItemID = 404;
+
+    private final int minimumItemQuantity = 1;
 
     /**
      * Constructor
@@ -42,18 +48,35 @@ public class ExternalInventorySystem {
     /**
      * This method finds an item in the database hashmap using the ID as the key
      * @param id key for hashmap
+     * @param quantity
      * @return returns a copy
+     * @throws ItemMissingException occurs when an unrecognized item ID is entered
+     * @throws InvalidAmountException occurs when an invalid quantity is entered
+     * @throws ServerErrorException occurs when servers are not responding
      */
-    public Item getItemByID(int id, int quantity){
-        Item itemCopy = new Item(itemHashMap.get(id), quantity);
+    public Item getItemByID(int id, int quantity) throws ItemMissingException, InvalidAmountException, ServerErrorException{
+        Item itemCopy = null;
+
+        if(id == serverDownItemID){
+            throw new ServerErrorException();
+        }
+
+        if(!itemHashMap.containsKey(id)) {
+            throw new ItemMissingException(id);
+        }
+
+        if(quantity < minimumItemQuantity)
+            throw new InvalidAmountException(quantity);
+
+        itemCopy = new Item(itemHashMap.get(id), quantity);
+
         return itemCopy;
     }
 
     /**
-     * Updates the inventory system
+     * Represents updating of the inventory system
      */
     public void updateInventorySystem(){
-        System.out.println("External Inventory System UPDATED");
     }
 
 }

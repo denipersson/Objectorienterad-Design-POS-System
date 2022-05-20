@@ -1,6 +1,7 @@
 package se.kth.ood.store.controller;
 
 import se.kth.ood.store.ItemDTO;
+import se.kth.ood.store.exceptions.*;
 import se.kth.ood.store.integration.ExternalInventorySystem;
 import se.kth.ood.store.integration.Printer;
 import se.kth.ood.store.model.*;
@@ -14,6 +15,8 @@ public class Controller {
     private SaleLog saleLog = new SaleLog();
     private Printer printer = new Printer();
     private CashRegister register = new CashRegister();
+    private LogHandler logHandler = new LogHandler();
+    private ErrorMessageHandler errorMessageHandler = new ErrorMessageHandler();
 
     /**
      * defines an empty Sale-object
@@ -23,26 +26,34 @@ public class Controller {
     }
 
     /**
-     *
+     * Scans an item
      * @param itemID the ID/barcode of the item scanned
      * @param quantity quantity of the item scanned
      */
-    public ItemDTO scanItem(int itemID, int quantity){ //find item in itemdatabase
-        Item scannedItem = externalInventorySystem.getItemByID(itemID, quantity);
-        ItemDTO[] dtos = sale.getItemDTOSInSale();
+    public ItemDTO scanItem(int itemID, int quantity) {
 
-        boolean alreadyExists = false;
+        Item scannedItem = null;
+        try{
+            scannedItem = externalInventorySystem.getItemByID(itemID, quantity);
+        }
+        catch(ItemMissingException e)
+        {
+            errorMessageHandler.printErrorMessage(e.getMessage());
+            logHandler.logErrorMessage(e);
+            return null;
+        }
+        catch(InvalidAmountException e){
+            errorMessageHandler.printErrorMessage(e.getMessage());
+            logHandler.logErrorMessage(e);
+            return null;
+        }
+        catch(ServerErrorException e){
+            errorMessageHandler.printErrorMessage(e.getMessage());
+            logHandler.logErrorMessage(e);
+            return null;
+        }
 
-        for (int i = 0; i < dtos.length; i++){
-            if(dtos[i].getName().equals(scannedItem.getName()))
-            {
-                alreadyExists = true;
-                sale.increaseItemQuantity(dtos[i].getName(), quantity);
-            }
-        }
-        if(!alreadyExists) {
-            sale.addItemToSale(scannedItem);
-        }
+        sale.addItemToSale(scannedItem);
 
         ItemDTO scannedItemDTO = new ItemDTO(scannedItem);
         return scannedItemDTO;
@@ -70,6 +81,16 @@ public class Controller {
      */
     public float getRunningTotal(){
         return sale.getRunningTotal();
+    }
+
+    /**
+     *
+     * Adds a new observer for the total revenue
+     * @param o observer to add
+     */
+    public void addTotalRevenueObserver(TotalRevenueObserver o)
+    {
+        register.addTotalRevenueObserver(o);
     }
 
     /**

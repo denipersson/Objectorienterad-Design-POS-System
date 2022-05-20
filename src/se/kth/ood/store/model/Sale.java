@@ -2,6 +2,7 @@ package se.kth.ood.store.model;
 
 import se.kth.ood.store.ItemDTO;
 
+import java.lang.reflect.Array;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -12,15 +13,22 @@ public class Sale {
     private LocalTime saleTime;
     private ArrayList<Item> itemsInSale = new ArrayList<Item>();
 
-
     /**
      * item to add to the sale
      * @param item to add
      */
     public void addItemToSale(Item item)
     {
+        for(int i = 0; i < itemsInSale.size(); i ++) {
+            if (itemsInSale.get(i).getName() == item.getName())
+            {
+                increaseItemQuantity(item.getName(), item.getQuantity());
+                return;
+            }
+        }
         itemsInSale.add(item);
     }
+
 
     /**
      * sets the time of sale to current time
@@ -72,6 +80,12 @@ public class Sale {
         setTimeOfSale();
         return getRunningTotal();
     }
+
+    /**
+     * Increases the quantity of an item already in the sale
+     * @param name of the item
+     * @param addedQuantity to increase by
+     */
     public void increaseItemQuantity(String name, int addedQuantity){
         for(int i = 0; i < itemsInSale.size(); i++)
         {
@@ -92,7 +106,6 @@ public class Sale {
      * @param discount to add
      */
     private void addDiscount(Discount discount){
-        //add discount
     }
 
 }

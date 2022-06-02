@@ -15,8 +15,7 @@ public class Controller {
     private SaleLog saleLog = new SaleLog();
     private Printer printer = new Printer();
     private CashRegister register = new CashRegister();
-    private LogHandler logHandler = new LogHandler();
-    private ErrorMessageHandler errorMessageHandler = new ErrorMessageHandler();
+
 
     /**
      * defines an empty Sale-object
@@ -30,28 +29,9 @@ public class Controller {
      * @param itemID the ID/barcode of the item scanned
      * @param quantity quantity of the item scanned
      */
-    public ItemDTO scanItem(int itemID, int quantity) {
+    public ItemDTO scanItem(int itemID, int quantity) throws InvalidAmountException, ItemMissingException, ServerErrorException{
 
-        Item scannedItem = null;
-        try{
-            scannedItem = externalInventorySystem.getItemByID(itemID, quantity);
-        }
-        catch(ItemMissingException e)
-        {
-            errorMessageHandler.printErrorMessage(e.getMessage());
-            logHandler.logErrorMessage(e);
-            return null;
-        }
-        catch(InvalidAmountException e){
-            errorMessageHandler.printErrorMessage(e.getMessage());
-            logHandler.logErrorMessage(e);
-            return null;
-        }
-        catch(ServerErrorException e){
-            errorMessageHandler.printErrorMessage(e.getMessage());
-            logHandler.logErrorMessage(e);
-            return null;
-        }
+        Item scannedItem = externalInventorySystem.getItemByID(itemID, quantity);
 
         sale.addItemToSale(scannedItem);
 

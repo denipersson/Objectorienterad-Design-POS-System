@@ -3,6 +3,7 @@ package se.kth.ood.store.exceptions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 
 /**
  * Represents error message display to developer
@@ -16,7 +17,7 @@ public class LogHandler {
     public void logErrorMessage(Exception exception){
         System.out.println("[LOG_DEVELOPER]");
         String message = createTime();
-        message += ", Error: " + exception.getMessage() + " " + exception.getStackTrace().toString();
+        message += ", Error: " + exception.getMessage() + " " + Arrays.toString(exception.getStackTrace());
         System.out.println(message);
     }
 

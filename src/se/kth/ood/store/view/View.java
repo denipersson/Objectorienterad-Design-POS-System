@@ -2,6 +2,7 @@ package se.kth.ood.store.view;
 
 import se.kth.ood.store.ItemDTO;
 import se.kth.ood.store.controller.Controller;
+import se.kth.ood.store.exceptions.*;
 
 /**
  * A place-holder class to represent what would otherwise be the real view and interface
@@ -13,6 +14,8 @@ public class View {
 
     private final int secondItemID = 2;
     private final int secondItemQuantity = 3;
+    private LogHandler logHandler = new LogHandler();
+    private ErrorMessageHandler errorMessageHandler = new ErrorMessageHandler();
 
     /**
      * constructor for view, also runs the hardcoded view
@@ -27,8 +30,10 @@ public class View {
      * A hardcoded method with all the inputs from an imaginary view
      */
     public void hardcodeView(){
+
         firstHardcodedSale();
         secondHardcodedSale();
+
     }
 
     private void firstHardcodedSale(){
@@ -36,34 +41,49 @@ public class View {
 
         printToConsole("Sale started.");
 
-        ItemDTO firstItemDTO = controller.scanItem(firstItemID, firstItemQuantity);
-        sendItemInfoToDisplay(firstItemDTO);
+        tryAddItem(firstItemID, firstItemQuantity);
 
-        ItemDTO secondItemDTO = controller.scanItem(secondItemID, secondItemQuantity);
-        sendItemInfoToDisplay(secondItemDTO);
-
-        ItemDTO wrongQuantityItemDTO = controller.scanItem(firstItemID, -1000);
-        sendItemInfoToDisplay(wrongQuantityItemDTO);
+        tryAddItem(secondItemID, secondItemQuantity);
+        int invalidQuantity = -1000;
+        tryAddItem(firstItemID, invalidQuantity);
 
         int errorItemIDTest = 8888;
-        ItemDTO nonExistantItemDTO = controller.scanItem(errorItemIDTest, 1);
-        sendItemInfoToDisplay(nonExistantItemDTO);
+        tryAddItem(firstItemID, errorItemIDTest);
 
         int serverErrorID = 404;
 
-        ItemDTO serverErrorItem = controller.scanItem(serverErrorID, 1);
-        sendItemInfoToDisplay(serverErrorItem);
+        tryAddItem(firstItemID, serverErrorID);
 
         float totalPrice = controller.endSale();
         controller.enterAmountPaid(totalPrice);
         controller.finish();
     }
+    private void tryAddItem(int ID, int quantity){
+        try {
+            ItemDTO dto = controller.scanItem(ID, quantity);
+            sendItemInfoToDisplay(dto);
+        }
+        catch(InvalidAmountException e)
+        {
+            errorMessageHandler.printErrorMessage("The inputted amount (" + e.getAmount() + ") is invalid!");
+            logHandler.logErrorMessage(e);
+        }
+        catch(ItemMissingException e)
+        {
+            errorMessageHandler.printErrorMessage("No item with ID: (" + e.getItemID()  + ") was found." );
+            logHandler.logErrorMessage(e);
+        }
+        catch(ServerErrorException e)
+        {
+            errorMessageHandler.printErrorMessage("Could not connect to server!");
+            logHandler.logErrorMessage(e);
+        }
+    }
 
     private void secondHardcodedSale(){
         controller.startSale();
 
-        ItemDTO firstItemDTO = controller.scanItem(firstItemID, firstItemQuantity);
-        sendItemInfoToDisplay(firstItemDTO);
+        tryAddItem(firstItemID, firstItemQuantity);
         float totalPrice = controller.endSale();
         controller.enterAmountPaid(totalPrice);
         controller.finish();
